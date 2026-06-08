@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-islamic-cream dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300;
+    font-family: 'Noto Sans Malayalam', sans-serif;
+  }
+
+  .font-arabic {
+    font-family: 'Amiri', serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-islamic-green hover:bg-islamic-green-dark text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-islamic-gold hover:bg-islamic-gold-light text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium py-2 px-4 rounded-xl transition-all duration-200;
+  }
+
+  .arabic-text {
+    font-family: 'Amiri', serif;
+    direction: rtl;
+    text-align: right;
+    line-height: 2;
+  }
+
+  .malayalam-text {
+    font-family: 'Noto Sans Malayalam', sans-serif;
+  }
+
+  .progress-bar {
+    @apply h-3 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-700 ease-out;
+    background: linear-gradient(90deg, #1a6b3c, #2d9e5f, #c9a84c);
+  }
+
+  .task-card {
+    @apply card p-4 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200;
+  }
+
+  .task-card.completed {
+    @apply border-l-4 border-l-islamic-green bg-green-50 dark:bg-green-900/20;
+  }
+
+  .checkbox-custom {
+    @apply w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center transition-all duration-200 flex-shrink-0;
+  }
+
+  .checkbox-custom.checked {
+    @apply bg-islamic-green border-islamic-green;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-green {
+    @apply badge bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300;
+  }
+
+  .badge-gold {
+    @apply badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-islamic-green rounded-full;
+}
+
+/* Arabic text glow on completion */
+.arabic-glow {
+  text-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
+}
+
+/* Celebration animation */
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.05) rotate(-1deg); }
+  50% { transform: scale(1.05) rotate(1deg); }
+  75% { transform: scale(1.02) rotate(-0.5deg); }
+  100% { transform: scale(1); }
+}
+
+.celebrate {
+  animation: celebrate 0.5s ease-in-out;
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Notification pulse */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
