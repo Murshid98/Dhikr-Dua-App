@@ -196,5 +196,15 @@ function getFriendlyError(code, message = '') {
     return 'Network error. Check your internet connection.'
   }
 
-  return `Sign-in failed. Please check your Firebase Console → Authentication → Sign-in method and make sure Email/Password is enabled. (Error: ${code || 'unknown'})`
+  // Check for unauthorized domain (most common Vercel issue)
+  if (
+    msg.includes('auth/unauthorized-domain') ||
+    msg.includes('domain') ||
+    msg.includes('blocked') ||
+    code === 'auth/unauthorized-domain'
+  ) {
+    return '⚙️ Your Vercel domain is not authorized. Go to Firebase Console → Authentication → Settings → Authorized domains → Add "dailydhikrjimshana.vercel.app"'
+  }
+
+  return `Sign-in failed (${code || 'unknown'}). Most likely cause: Go to Firebase Console → Authentication → Settings → Authorized domains → Add "dailydhikrjimshana.vercel.app"`
 }
