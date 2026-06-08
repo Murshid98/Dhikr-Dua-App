@@ -18,8 +18,11 @@ export default function LoginForm({ onSwitchToRegister }) {
     try {
       await login(email, password)
     } catch (err) {
-      console.error('Login error:', err)
-      setError(getFriendlyError(err.code, err.message))
+      console.error('Login error full object:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+      console.error('Login error code:', err.code)
+      console.error('Login error message:', err.message)
+      console.error('Login error name:', err.name)
+      setError(getFriendlyError(err.code, err.message, err.name))
     } finally {
       setLoading(false)
     }
@@ -31,8 +34,8 @@ export default function LoginForm({ onSwitchToRegister }) {
     try {
       await loginWithGoogle()
     } catch (err) {
-      console.error('Google login error:', err)
-      setError(getFriendlyError(err.code, err.message))
+      console.error('Google login error full:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+      setError(getFriendlyError(err.code, err.message, err.name))
     } finally {
       setLoading(false)
     }
@@ -46,8 +49,8 @@ export default function LoginForm({ onSwitchToRegister }) {
       await resetPassword(email)
       setResetSent(true)
     } catch (err) {
-      console.error('Reset error:', err)
-      setError(getFriendlyError(err.code, err.message))
+      console.error('Reset error full:', JSON.stringify(err, Object.getOwnPropertyNames(err)))
+      setError(getFriendlyError(err.code, err.message, err.name))
     } finally {
       setLoading(false)
     }
@@ -158,7 +161,7 @@ export default function LoginForm({ onSwitchToRegister }) {
   )
 }
 
-function getFriendlyError(code, message = '') {
+function getFriendlyError(code, message = '', name = '') {
   const map = {
     'auth/user-not-found': 'No account found with this email.',
     'auth/wrong-password': 'Incorrect password. Please try again.',
@@ -191,5 +194,8 @@ function getFriendlyError(code, message = '') {
     return 'Network error. Check your internet connection.'
   }
 
-  return `Sign-in failed. Please check your Firebase Console → Authentication → Sign-in method and make sure Email/Password is enabled. (Error: ${code || 'unknown'})`
+  // Show the raw error details to help diagnose
+  const detail = code || name || 'unknown'
+  const msgSnippet = message ? ` — ${message.slice(0, 120)}` : ''
+  return `Sign-in failed (${detail})${msgSnippet}`
 }
