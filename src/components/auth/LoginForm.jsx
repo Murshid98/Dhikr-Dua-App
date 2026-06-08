@@ -18,7 +18,8 @@ export default function LoginForm({ onSwitchToRegister }) {
     try {
       await login(email, password)
     } catch (err) {
-      setError(getFriendlyError(err.code))
+      console.error('Login error:', err)
+      setError(getFriendlyError(err.code, err.message))
     } finally {
       setLoading(false)
     }
@@ -30,7 +31,8 @@ export default function LoginForm({ onSwitchToRegister }) {
     try {
       await loginWithGoogle()
     } catch (err) {
-      setError(getFriendlyError(err.code))
+      console.error('Google login error:', err)
+      setError(getFriendlyError(err.code, err.message))
     } finally {
       setLoading(false)
     }
@@ -44,7 +46,8 @@ export default function LoginForm({ onSwitchToRegister }) {
       await resetPassword(email)
       setResetSent(true)
     } catch (err) {
-      setError(getFriendlyError(err.code))
+      console.error('Reset error:', err)
+      setError(getFriendlyError(err.code, err.message))
     } finally {
       setLoading(false)
     }
@@ -155,19 +158,38 @@ export default function LoginForm({ onSwitchToRegister }) {
   )
 }
 
-function getFriendlyError(code) {
+function getFriendlyError(code, message = '') {
   const map = {
     'auth/user-not-found': 'No account found with this email.',
     'auth/wrong-password': 'Incorrect password. Please try again.',
     'auth/invalid-email': 'Please enter a valid email address.',
-    'auth/too-many-requests': 'Too many attempts. Please try again later.',
-    'auth/network-request-failed': 'Network error. Check your connection.',
     'auth/invalid-credential': 'Invalid email or password.',
-    'auth/popup-closed-by-user': 'Sign-in popup was closed.',
-    'auth/invalid-api-key': '⚙️ Firebase is not configured yet. Please add your Firebase credentials to src/firebase.js — see the README for instructions.',
-    'auth/configuration-not-found': '⚙️ Firebase is not configured yet. Please add your Firebase credentials to src/firebase.js — see the README for instructions.',
-    'auth/app-not-authorized': '⚙️ Firebase app not authorized. Check your Firebase project settings.',
-    'auth/operation-not-allowed': '⚙️ This sign-in method is not enabled in your Firebase console. Enable Email/Password and Google auth.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+    'auth/network-request-failed': 'Network error. Check your internet connection.',
+    'auth/popup-closed-by-user': 'Sign-in popup was closed. Please try again.',
+    'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups.',
+    'auth/cancelled-popup-request': 'Sign-in was cancelled.',
+    'auth/invalid-api-key': '⚙️ Firebase API key is invalid. Check your environment variables in Vercel.',
+    'auth/configuration-not-found': '⚙️ Firebase is not configured. Check your environment variables in Vercel.',
+    'auth/app-not-authorized': '⚙️ This domain is not authorized in Firebase. Add your Vercel URL to Firebase → Authentication → Authorized domains.',
+    'auth/operation-not-allowed': '⚙️ Email/Password sign-in is not enabled. Go to Firebase Console → Authentication → Sign-in method → Enable Email/Password.',
+    'auth/unauthorized-domain': '⚙️ This domain is not authorized. Go to Firebase Console → Authentication → Settings → Authorized domains → Add your Vercel URL.',
+    'auth/user-disabled': 'This account has been disabled.',
   }
-  return map[code] || `Something went wrong (${code || 'unknown'}). Please check your Firebase configuration.`
+
+  if (map[code]) return map[code]
+
+  // Detect common issues from error message text
+  const msg = (message || '').toLowerCase()
+  if (msg.includes('operation-not-allowed') || msg.includes('not enabled')) {
+    return '⚙️ Email/Password sign-in is not enabled. Go to Firebase Console → Authentication → Sign-in method → Enable Email/Password.'
+  }
+  if (msg.includes('unauthorized') || msg.includes('not authorized')) {
+    return '⚙️ This domain is not authorized in Firebase. Add your Vercel URL to Firebase → Authentication → Settings → Authorized domains.'
+  }
+  if (msg.includes('network') || msg.includes('fetch')) {
+    return 'Network error. Check your internet connection.'
+  }
+
+  return `Sign-in failed. Please check your Firebase Console → Authentication → Sign-in method and make sure Email/Password is enabled. (Error: ${code || 'unknown'})`
 }
